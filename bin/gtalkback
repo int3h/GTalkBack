@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-original_path = File.expand_path(__FILE__)
-
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'gtalkback'
 require 'gt_progressbar'
@@ -21,25 +19,6 @@ require 'FileUtils'
 # TODO: Refactor whole damn this into nice proper Ruby app with ./lib, ./bin, etc.
 # along with tests.
 # TODO: Check into feasability of just using regexs for inout and ERB for output
-
-# =======================================================================================
-# A note on speed vs. fragility:
-# Because using css selectors is so slow, in many cases we manually walk the DOM, doing
-# quick sanity checks here and there to make sure the element we expect to be the second
-# child of the first child of the <body> (or whatever) is what we expect it to be. By
-# eliminating CSS calls, we run in 30% of the time as with them. But, of course, if
-# Google's DOM changes even slightly, the whole thing breaks. On the other hand, CSS
-# selectors weren't much better; because Google used inline styles rather than classes,
-# IDs, etc., we had to do things like select all the DIVs and presume they're all message
-# items, or that 'span > span > span', should it exist, is a username.
-# =======================================================================================
-
-# Nokogiri convienence method
-# class String
-#   def html_strip
-#     self.gsub(/^[\302\240|\s]*|[\302\240|\s]*$/, '')
-#   end
-# end
 
 puts "GMail Chat Backup Utility v1.0"
 puts
@@ -70,4 +49,13 @@ unless File.exist?('style.css') then
   FileUtils.cp(File.expand_path('../../resources', __FILE__) + "/style.css", output_dir + '/style.css')
 end
 
-fetcher = GTalkFetcher.new(database_file)
+puts "Fethcing and parsing chats"
+fetcher = Gtalkback::GTalkFetcher.new(database_file)
+
+fetch_pbar = Gtalkback::ProgressBar.new("Parsing", fetcher.retrieve_number_of_conversations)
+
+fetcher.fetch_records do
+  fetch_pbar.inc
+end
+
+fetch_pbar.finish
