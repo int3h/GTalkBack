@@ -42,8 +42,9 @@ module Gtalkback
       results.each do |row|
         if(index == -1 || records[index].id != row['id']) then
           # Create a new conversation, add our current message to it
-          new_convo = Conversation.new(row['conversation_subject'], row['conversation_date'], Array.new, row['id'])
-          # Parse message, add it to conversation
+          new_convo = Gtalkback::Conversation.new(row['conversation_subject'], row['conversation_date'], Array.new, row['id'])
+          # TODO: Parse message, add it to conversation
+          
           index += 1
           records[index] = new_convo
           yield row['chat_subject'] if block_given?
