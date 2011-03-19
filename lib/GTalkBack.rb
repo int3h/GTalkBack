@@ -1,4 +1,4 @@
 module Gtalkback
   require 'GTalkBack/parser_structs'
-	require 'GTalkBack/gtalkfetcher'
+  require 'GTalkBack/gtalkfetcher'
 end
