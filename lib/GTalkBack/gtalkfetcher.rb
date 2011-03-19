@@ -1,4 +1,5 @@
 require 'sqlite3'
+require 'GTalkBack/chat_parser.rb'
 
 module Gtalkback
 
@@ -43,13 +44,26 @@ module Gtalkback
         if(index == -1 || records[index].id != row['id']) then
           # Create a new conversation, add our current message to it
           new_convo = Gtalkback::Conversation.new(row['conversation_subject'], row['conversation_date'], Array.new, row['id'])
-          # TODO: Parse message, add it to conversation
+          
+          # Parse message, add it to conversation
+          chat = Gtalkback::Chat.new
+          chat.subject = row['chat_subject']
+          chat.date = row['chat_date']
+          chat.messages = Gtalkback::ChatParser.parse(row['chat_content'])
+          new_convo.chats << chat
           
           index += 1
           records[index] = new_convo
+          
+          # Update our caller on our progress
           yield row['chat_subject'] if block_given?
         else
-          # add on our current message to the current record
+          # add on our current message to the current conversation
+          chat = Gtalkback::Chat.new
+          chat.subject = row['chat_subject']
+          chat.date = row['chat_date']
+          chat.messages = Gtalkback::ChatParser.parse(row['chat_content'])
+          records[index].chats << chat
         end
       end
     end
