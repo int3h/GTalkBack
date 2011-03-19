@@ -65,12 +65,9 @@ else
   end
 end
 
-Dir.chdir(output_dir)
-
-
 # Will not replace an existing style, should it exist
 unless File.exist?('style.css') then
-  FileUtils.cp(original_path + '/../../resources/style.css', './style.css')
+  FileUtils.cp(File.expand_path('../../resources', __FILE__) + "/style.css", output_dir + '/style.css')
 end
 
 fetcher = GTalkFetcher.new(database_file)
