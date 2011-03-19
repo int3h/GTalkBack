@@ -38,16 +38,18 @@ module Gtalkback
       results = retrieve_records
 
       records = Array.new(retrieve_number_of_conversations)
-      index = nil
+      index = -1
       results.each do |row|
-        if(index == nil || records[index].id != row['id']) then
+        if(index == -1 || records[index].id != row['id']) then
           # Create a new conversation, add our current message to it
+          new_convo = Conversation.new(row['conversation_subject'], row['conversation_date'], Array.new, row['id'])
+          # Parse message, add it to conversation
+          index += 1
+          records[index] = new_convo
+          yield row['chat_subject'] if block_given?
         else
           # add on our current message to the current record
         end
-        # TODO: Make this fire only on new conversations, and show the conversation subject and date
-        # TODO: Create a way for the caller to find the total # of convos so they can increment a progress bar
-        yield row['chat_subject'] if block_given?
       end
     end
   

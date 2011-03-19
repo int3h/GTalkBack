@@ -16,8 +16,6 @@ require 'FileUtils'
 # TODO: See if we can't get a cleaner snapshot of the database w/o the other non-chat
 # items in it.
 # TODO: Check into outputting prettier HTML or XHTML (indented)
-# TODO: Refactor whole damn this into nice proper Ruby app with ./lib, ./bin, etc.
-# along with tests.
 # TODO: Check into feasability of just using regexs for inout and ERB for output
 
 puts "GMail Chat Backup Utility v1.0"
@@ -49,7 +47,7 @@ unless File.exist?('style.css') then
   FileUtils.cp(File.expand_path('../../resources', __FILE__) + "/style.css", output_dir + '/style.css')
 end
 
-puts "Fethcing and parsing chats"
+puts "Fethcing and parsing chats . . . "
 fetcher = Gtalkback::GTalkFetcher.new(database_file)
 
 fetch_pbar = Gtalkback::ProgressBar.new("Parsing", fetcher.retrieve_number_of_conversations)

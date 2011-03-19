@@ -1,4 +1,4 @@
-Struct.new("Conversation", :subject, :date, :chats, :id)
-Struct.new("Chat", :subjct, :date, :messages)
-Struct.new("Message", :content, :time, :username)
-Struct.new("DateBreak", :time)
+Conversation = Struct.new(:subject, :date, :chats, :id)
+Chat = Struct.new(:subjct, :date, :messages)
+Message = Struct.new(:content, :time, :username)
+DateBreak = Struct.new(:time)
