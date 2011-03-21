@@ -21,6 +21,8 @@ box-shadow: 0px 0px 10px 1px #3d0d16;
 -webkit-box-shadow: 0px 0px 10px 1px #3d0d16;
 -moz-box-shadow: 0px 0px 10px 1px #3d0d16;
 overflow: hidden;
+margin-bottom: 3em;
+padding-bottom: 7px;
 }
 .date {
 text-align: right;

@@ -4,19 +4,14 @@ $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'gtalkback'
 require 'gt_progressbar'
 
-require 'FileUtils'
+require 'FileUtils'   # Used to copy CSS file
 
 # TODO: Fix bug where gaps show in the username/message border in the first log_group
-# TODO: !!! Make the output handle threaded messages, combining them into one file !!!
-# (needed because, when we delete the chats from GMail, the non-chat replies go with.
-# Right now they are saved, but written as a seperate file w/o content)
-# TODO: Use the chat thread first-received date instead of the last-updated date?
-# TODO: Wrte a better WHERE statement that selects only chats (look into using other DB
-# fields, like chat_reply_to or whatever)
-# TODO: See if we can't get a cleaner snapshot of the database w/o the other non-chat
-# items in it.
-# TODO: Check into outputting prettier HTML or XHTML (indented)
-# TODO: Check into feasability of just using regexs for inout and ERB for output
+# TODO: Check into outputting prettier HTML or XHTML (indented)t
+# TODO: Remove time of day from filename, unless two chats on same day -- then add hour,
+# unless there are two chats on the same hour of the same day, then add minutes, etc.
+# TODO: Replace nokirigi parser with regexes, nokogiri formatter with ERB
+# TODO: Multithread
 
 puts "GMail Chat Backup Utility v1.0"
 puts
@@ -47,13 +42,32 @@ unless File.exist?('style.css') then
   FileUtils.cp(File.expand_path('../../resources', __FILE__) + "/style.css", output_dir + '/style.css')
 end
 
-puts "Fetching and parsing chats . . . "
+puts "Processing chats . . . "
 fetcher = Gtalkback::GTalkFetcher.new(database_file)
 
 fetch_pbar = Gtalkback::ProgressBar.new("Parsing", fetcher.retrieve_number_of_conversations)
 
-fetcher.fetch_records do
+conversations = fetcher.fetch_records do
   fetch_pbar.inc
 end
 
 fetch_pbar.finish
+
+format_pbar = Gtalkback::ProgressBar.new("Writing", conversations.length)
+
+conversations.each do |convo|
+  filename = Time.at(convo.date/1000).strftime('%Y-%m-%d %H.%M.%S')
+  filename += ' '
+  filename += convo.subject.tr("/\000", "")     # Escape the subject to make it a safe filename
+  filename += '.html'
+  filename = output_dir + '/' + File.basename(filename)
+  
+  puts filename if convo.chats.length > 1
+  
+  File.open(filename, 'w') do |file|
+      file.write Gtalkback::NokChatFormatter.format_conversation(convo)
+  end
+  format_pbar.inc
+end
+
+format_pbar.finish

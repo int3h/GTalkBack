@@ -66,6 +66,7 @@ module Gtalkback
           records[index].chats << chat
         end
       end
+      return records
     end
   
     def retrieve_number_of_conversations()

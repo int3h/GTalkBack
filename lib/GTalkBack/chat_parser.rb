@@ -12,13 +12,6 @@ require 'nokogiri'
 # items, or that 'span > span > span', should it exist, is a username.
 # =======================================================================================
 
-# Nokogiri convienence method
-# class String
-#   def html_strip
-#     self.gsub(/^[\302\240|\s]*|[\302\240|\s]*$/, '')
-#   end
-# end
-
 module Gtalkback
   class ChatParser
     def self.parse(text)
@@ -42,10 +35,8 @@ module Gtalkback
 
           message.time = log_item.first_element_child.content
 
-          # If we see a username in the current log_item, start a new log_group
-          # div in the output
           if ((username_source = log_item.children[1].first_element_child.first_element_child) &&
-               username_source.attribute('style') &&
+              username_source.attribute('style') &&
               (username_source.attribute('style').value == 'font-weight:bold')) then
             message.username = username_source.content
             
@@ -66,9 +57,11 @@ module Gtalkback
               log_item.first_element_child.first_element_child.attribute('style').value ==
               'font-size:1;width:100%') then
           Gtalkback::DateBreak.new(log_item.first_element_child.children[1].content)
-        # ... Or some unknown thing (just output it unaltered)
+          
+        # ... Or something else (probably e-mail replies to chat conversations.)
         else
-          #p "Error: unknown message type found"
+          # FIXME: How do we handle these type of messages? Do we just strip replies out of it?
+          Gtalkback::Email.new(text)    # Return it as a string of unaltered text
         end
 
       end
