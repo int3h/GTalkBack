@@ -61,7 +61,8 @@ module Gtalkback
         # ... Or something else (probably e-mail replies to chat conversations.)
         else
           # FIXME: How do we handle these type of messages? Do we just strip replies out of it?
-          Gtalkback::Email.new(text)    # Return it as a string of unaltered text
+          # If this is an e-mail, just return a string of its contents
+          return text    # Return it as a string of unaltered text
         end
 
       end

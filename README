@@ -1,0 +1,7 @@
+This is a project that aims to take existing GMail chat logs and export them to other formats. Currently this is alpha-quality software and only mostly works.
+
+The major caveat to this system is that it does not directly interface with GMail. Instead, the user needs to turn on Google Gears and switch GMail into to offline mode, making sure that GMail is set to keep a copy of all their chats offline (instructions on thos forthcoming.) Then, GTalkBack will take that database created by Gears and parse and export it into other formats.
+
+Currently, HTML is the only supported output format, but text, XML and others can easily be added in.
+
+The main bug right now is that e-mails interspersed in chat log don't get exported correctly. That is, if you start a chat, then the other person goes offline and the conversation changes to regular e-mails back and forth, those e-mails aren't currently exported. That should change in future versions.

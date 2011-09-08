@@ -42,17 +42,29 @@ module Gtalkback
       index = -1
       results.each do |row|
         if(index == -1 || records[index].id != row['id']) then
+          index += 1
+          
           # Create a new conversation, add our current message to it
           new_convo = Gtalkback::Conversation.new(row['conversation_subject'], row['conversation_date'], Array.new, row['id'])
+          messages = Gtalkback::ChatParser.parse(row['chat_content']);
           
-          # Parse message, add it to conversation
-          chat = Gtalkback::Chat.new
-          chat.subject = row['chat_subject']
-          chat.date = row['chat_date']
-          chat.messages = Gtalkback::ChatParser.parse(row['chat_content'])
-          new_convo.chats << chat
+          if(messages.is_a?(Array)) then
+            # Parse message, add it to conversation
+            chat = Gtalkback::Chat.new
+            chat.subject = row['chat_subject']
+            chat.date = row['chat_date']
+            chat.messages = messages
+            new_convo.chats << chat
+          # If this is an e-mail reply . . .
+          elsif(messages.is_a?(String)) then
+            reply = Gtalkback::Email.new
+            reply.subject = row['chat_subject']
+            reply.date = row['chat_date']
+            reply.content = messages
+            new_convo.chats << reply
+            puts "Encoded an e-mail: " + new_convo.chats.class.to_s
+          end
           
-          index += 1
           records[index] = new_convo
           
           # Update our caller on our progress

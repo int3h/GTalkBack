@@ -6,8 +6,7 @@ require 'gt_progressbar'
 
 require 'FileUtils'   # Used to copy CSS file
 
-# TODO: Fix bug where gaps show in the username/message border in the first log_group
-# TODO: Check into outputting prettier HTML or XHTML (indented)t
+# TODO: Check into outputting prettier HTML or XHTML (indented) and no '&nbsp;'
 # TODO: Remove time of day from filename, unless two chats on same day -- then add hour,
 # unless there are two chats on the same hour of the same day, then add minutes, etc.
 # TODO: Replace nokirigi parser with regexes, nokogiri formatter with ERB
@@ -61,8 +60,6 @@ conversations.each do |convo|
   filename += convo.subject.tr("/\000", "")     # Escape the subject to make it a safe filename
   filename += '.html'
   filename = output_dir + '/' + File.basename(filename)
-  
-  puts filename if convo.chats.length > 1
   
   File.open(filename, 'w') do |file|
       file.write Gtalkback::NokChatFormatter.format_conversation(convo)
